@@ -18,8 +18,15 @@ class Booking extends Model
         'end_date'
     ];
 
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
     public function room()
     {
-        return $this->hasOne('App\Models\Room','id','room_id');
+        return $this->belongsTo(Room::class, 'room_id');
     }
+
+
 }

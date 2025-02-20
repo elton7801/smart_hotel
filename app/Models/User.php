@@ -31,6 +31,10 @@ class User extends Authenticatable
         'usertype'
     ];
 
+    public function bookings(){
+        return $this->hasOne('App\Models\Booking', 'email','room_id');
+    }
+
     /**
      * The attributes that should be hidden for serialization.
      *

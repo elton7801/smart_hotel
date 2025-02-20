@@ -11,6 +11,17 @@
         .div_deg {
             padding-top: 30px;
         }
+        .booking_title{
+            font-size: 40px;
+            font-weight: bold;
+            color: #fff;
+            background: linear-gradient(135deg, #5fa4ff, #7ba4fe);
+            padding: 20px 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            display: inline-block;
+            margin-top:30px;
+        }
     </style>
 </head>
 <body>
@@ -21,7 +32,7 @@
         <div class="page-header">
             <div class="container-fluid">
                 <div>
-                    <h1 style="font-size: 30px; font-weight:bold;">Edit Room</h1>
+                    <h1 class="booking_title">Edit Room</h1>
                     <form action="{{ url('update_room',$data->id) }}" method="post" enctype="multipart/form-data">
                         @csrf
                         <div class="div_deg">

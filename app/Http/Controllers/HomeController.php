@@ -12,6 +12,10 @@ use App\Models\Contact;
 
 use App\Models\Gallary;
 
+use App\Models\User;
+
+use Illuminate\Support\Facades\Auth;
+
 class HomeController extends Controller
 {
     public function room_details($id)
@@ -48,6 +52,7 @@ class HomeController extends Controller
         // Create a new booking
         $data = new Booking;
         $data->room_id = $id;
+        $data->user_id = Auth::id();
         $data->name = $request->name;
         $data->email = $request->email;
         $data->phone = $request->phone;
@@ -121,4 +126,34 @@ class HomeController extends Controller
         return view('home.available_room', compact('availableRooms', 'checkIn', 'checkOut'));
     }
 
+    public function my_booking(){
+
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('message', 'Please log in first.');
+        }
+
+        $user = Auth::user();
+
+        if ($user->usertype !== 'user') {
+            return redirect()->back()->with('message', 'Access Denied.');
+        }
+        $bookings = Booking::whereHas('user', function ($query) {
+            $query->where('email', Auth::user()->email);
+        })->with('room')->get();
+
+        return view('home.my_booking', compact('bookings'));
+    }
+
+    public function view_booking($id)
+    {
+        $data = Booking::find($id);
+        return view('home.view_booking', compact('data'));
+    }
+
+    public function cancel_booking($id)
+    {
+        $data = Booking::with('room')->find($id);
+        $data->delete();
+        return redirect('my_booking');
+    }
 }

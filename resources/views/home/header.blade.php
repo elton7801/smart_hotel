@@ -34,6 +34,9 @@
                       <li class="nav-item">
                          <a class="nav-link" href="{{ url('contact_us') }}">Contact Us</a>
                       </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="{{ url('my_booking') }}">My Booking</a>
+                     </li>
 
                       @if (Route::has('login'))
                           @auth

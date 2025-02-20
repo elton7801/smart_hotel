@@ -89,5 +89,11 @@ Route::post('/contact',[HomeController::class,'contact']);
 
 Route::get('/search_availability',[HomeController::class,'search_availability']);
 
+Route::get('/my_booking',[HomeController::class,'my_booking']);
+
+Route::get('/view_booking/{id}',[HomeController::class,'view_booking']);
+
+Route::get('/cancel_booking/{id}',[HomeController::class,'cancel_booking']);
+
 
 
