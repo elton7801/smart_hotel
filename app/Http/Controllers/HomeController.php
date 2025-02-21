@@ -14,6 +14,10 @@ use App\Models\Gallary;
 
 use App\Models\User;
 
+use Stripe;
+
+use Session;
+
 use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
@@ -62,7 +66,7 @@ class HomeController extends Controller
         // Save the booking
         $data->save();
 
-        return redirect()->back()->with('message', 'Room booked successfully!');
+        return redirect("confirm_booking/{$data->id}");
     }
 
 
@@ -150,10 +154,56 @@ class HomeController extends Controller
         return view('home.view_booking', compact('data'));
     }
 
+    public function confirm_booking($id)
+    {
+        $data = Booking::find($id);
+        return view('home.confirm_booking',compact('data'));
+    }
+
     public function cancel_booking($id)
     {
         $data = Booking::with('room')->find($id);
         $data->delete();
         return redirect('my_booking');
     }
+    public function stripe($price)
+
+    {
+        return view('home.stripe', compact('price'));
+    }
+
+    public function stripePost(Request $request, $price)
+    {
+        Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+
+        try {
+            // Process payment
+            Stripe\Charge::create([
+                "amount" => $price * 100,
+                "currency" => "myr",
+                "source" => $request->stripeToken,
+                "description" => "Room Booking payment"
+            ]);
+
+            // Fetch latest unpaid booking for the authenticated user
+            $booking = Booking::where('user_id', Auth::id())
+                              ->where('payment_status', 'unpaid')
+                              ->latest()
+                              ->first();
+
+            if ($booking) {
+                $booking->payment_status = 'paid';
+                $booking->save();
+            } else {
+                return back()->with('error', 'No unpaid booking found.');
+            }
+
+            Session::flash('success', 'Payment successful!');
+            return redirect('my_booking');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Payment failed: ' . $e->getMessage());
+        }
+    }
+
+
 }

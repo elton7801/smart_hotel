@@ -93,7 +93,7 @@
                             <img style="width:200px; display: inline-block;" src="/room/{{ $booking->room->image }}" alt="Room Image">
                         </td>
                         <td>
-                            <a class="btn btn-warning" href="{{ url('view_booking',$booking->id)}}">View</a>
+                            <a class="btn btn-warning" href="{{ url('view_booking',$booking->id)}}">Check In</a>
                         </td>
                     </tr>
                     @endforeach

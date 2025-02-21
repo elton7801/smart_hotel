@@ -110,6 +110,7 @@
                 </div>
                 <div style="padding-top: 20px">
                     <input type="submit" style="background-color: skyblue" class="btn btn-primary" value="Book Room">
+
                 </div>
                 </form>
               </div>

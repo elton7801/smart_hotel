@@ -95,5 +95,13 @@ Route::get('/view_booking/{id}',[HomeController::class,'view_booking']);
 
 Route::get('/cancel_booking/{id}',[HomeController::class,'cancel_booking']);
 
+Route::controller(HomeController::class)->group(function(){
 
+    Route::get('stripe/{price}', 'stripe');
+
+    Route::post('stripe/{price}', 'stripePost')->name('stripe.post');
+
+});
+
+Route::get('/confirm_booking/{id}',[HomeController::class,'confirm_booking']);
 

@@ -112,6 +112,11 @@
          </div>
 
          <div class="info_row">
+            <label>Room Price:</label>
+            <span>${{ $data->room->price }}</span>
+         </div>
+
+         <div class="info_row">
             <label>Arrival Date:</label>
             <span>{{ $data->start_date }}</span>
          </div>
@@ -122,10 +127,13 @@
          </div>
 
          <div class="image_container">
-            <label>Check In QR</label>
-            <img src="/images/QRCode.svg" alt="Room Image">
+            <label>Room Image:</label>
+            <img src="/room/{{ $data->room->image }}" alt="Room Image">
          </div>
-
+         <td>
+            <a style="margin-top: 20px;" onclick="return confirm ('confirm Delete ?')" class="btn btn-danger" href="{{ url('cancel_booking',$data->id)}}">Cancel Booking</a>
+            <a style="margin-top: 20px;" class="btn btn-success" href="{{ url('stripe', $data->room->price) }}">Proceed To Payment</a>
+        </td>
       </div>
 
 

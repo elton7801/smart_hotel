@@ -46,6 +46,7 @@
                     <th class="th_deg">Arrival Date</th>
                     <th class="th_deg">Leaving Date</th>
                     <th class="th_deg">Status</th>
+                    <th class="th_deg">Payment</th>
                     <th class="th_deg">Room Title</th>
                     <th class="th_deg">Price</th>
                     <th class="th_deg">Image</th>
@@ -76,6 +77,7 @@
                         @endif
 
                     </td>
+                    <td>{{ $data->payment_status }}</td>
                     <td>{{ $data->room->room_title }}</td>
                     <td>{{ $data->room->price }}</td>
                     <td>
