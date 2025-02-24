@@ -123,7 +123,12 @@
 
          <div class="image_container">
             <label>Check In QR</label>
-            <img src="/images/QRCode.svg" alt="Room Image">
+
+            @if($data->qr_code)
+               <img src="data:image/png;base64,{{ $data->qr_code }}" alt="QR Code">
+            @else
+               <p>Waiting Room To Be Clean</p>
+            @endif
          </div>
 
       </div>

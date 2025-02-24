@@ -64,7 +64,7 @@
                     <td>{{ $data->end_date }}</td>
                     <td>
 
-                        @if($data->status == 'approve')
+                        @if($data->status == 'approved')
                         <span style='color:green'>Approved</span>
                         @endif
 
@@ -88,7 +88,7 @@
                     </td>
                     <td>
                         <span style="padding-bottom: 10px;">
-                            <a class="btn btn-success" href="{{ url('approve_book',$data->id) }}">Approve</a>
+                            <a class="btn btn-success" href="{{ url('approve',$data->id) }}">Approve</a>
                         </span>
                         <a class="btn btn-warning" href="{{ url('reject_book',$data->id) }}">Rejected</a>
                     </td>

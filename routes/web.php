@@ -46,7 +46,10 @@ Route::get('/bookings',[AdminController::class,'bookings'])
 Route::get('/delete_booking/{id}',[AdminController::class,'delete_booking'])
 ->middleware(['auth','admin']);
 
-Route::get('/approve_book/{id}',[AdminController::class,'approve_book'])
+Route::post('/approve_book/{id}',[AdminController::class,'approve_book'])
+->middleware(['auth','admin']);
+
+Route::get('/approve/{id}',[AdminController::class,'approve'])
 ->middleware(['auth','admin']);
 
 Route::get('/reject_book/{id}',[AdminController::class,'reject_book'])

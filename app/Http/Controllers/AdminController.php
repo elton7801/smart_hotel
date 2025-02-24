@@ -1,23 +1,16 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use Illuminate\Http\Request;
-
 use App\Models\User;
-
 use Illuminate\Support\Facades\Auth;
-
 use App\Models\Room;
-
 use App\Models\Booking;
-
 use App\Models\Gallary;
-
 use App\Models\Contact;
-
 use App\Notifications\SendEmailNotification;
-
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Carbon\Carbon;
 use Notification;
 
 class AdminController extends Controller
@@ -146,12 +139,59 @@ class AdminController extends Controller
         return redirect()->back();
     }
 
-    public function approve_book($id)
+    public function approve($id)
     {
-        $booking = Booking::find($id);
-        $booking->status='approve';
+        $data = Booking::find($id);
+
+        return view ('admin.approve',compact('data'));
+    }
+
+    public function approve_book(Request $request, $id)
+    {
+        // Fetch booking record
+        $booking = Booking::findOrFail($id);
+
+        // Update status to 'approved'
+        $booking->status = 'approved';
+
+        // Get QR code content from frontend or use default
+        $qrcodeContent = $request->input('qrcode_content', json_encode([
+            'booking_id' => $booking->id,
+            'start_date' => $booking->start_date,
+            'end_date' => $booking->end_date,
+        ]));
+
+        // Generate QR Code (always generate)
+        $qrcode = QrCode::format('png')->size(300)->generate($qrcodeContent);
+
+        // Encode QR code to base64
+        $qrcodeBase64 = base64_encode($qrcode);
+
+        // Store QR code in db
+        $booking->qr_code = $qrcodeBase64 ?? null;
+
+        // Save changes
         $booking->save();
-        return redirect()->back();
+
+        // Check if current date is within the activation range
+        $currentDate = Carbon::now();
+        $startDate = Carbon::parse($booking->start_date);
+        $endDate = Carbon::parse($booking->end_date);
+
+        // Prepare message based on activation status
+        if ($currentDate->between($startDate, $endDate)) {
+            $messageType = 'message';
+            $message = 'Booking approved and QR Code generated successfully! QR is active.';
+        } else {
+            $messageType = 'warning';
+            $message = 'Booking approved and QR Code generated. Note: The QR Code will be active between '
+                . $startDate->toDateTimeString() . ' and ' . $endDate->toDateTimeString();
+        }
+
+        // Redirect to bookings with message and QR code
+        return redirect('bookings')
+            ->with($messageType, $message)
+            ->with('qrcode', $qrcodeBase64);
     }
 
     public function reject_book($id)
@@ -224,5 +264,47 @@ class AdminController extends Controller
         Notification::send($data, new SendEmailNotification($details));
 
         return redirect()->back();
+    }
+
+    public function show_qr()
+    {
+        return view('home.qrcode');
+    }
+
+    public function generate_qr(Request $request)
+    {
+        if ($request->qrcode) {
+
+            // Fetch the record with start_date and end_date
+            $record = Booking::where('qr_code', $request->qrcode)->first();
+
+            if (!$record) {
+                return back()->with('error', 'QR code data not found in the database.');
+            }
+
+            $currentDate = Carbon::now();
+            $startDate = Carbon::parse($record->start_date);
+            $endDate = Carbon::parse($record->end_date);
+
+            // Check if current date is between start and end date
+            if ($currentDate->between($startDate, $endDate)) {
+
+                // Generate QR code
+                $qrcode = QrCode::format('png')->size(300)->generate($request->qrcode);
+
+                // Encode QR code to base64 for storing in DB
+                $qrcodeBase64 = base64_encode($qrcode);
+
+                // Update the qr_code column in the database
+                $record->qr_code = $qrcodeBase64;
+                $record->save();
+
+                return back()->with('qrcode', $qrcodeBase64)->with('message', 'QR Code generated and stored successfully!');
+            } else {
+                return back()->with('error', 'QR Code is inactive. Valid between ' . $startDate->toDateTimeString() . ' and ' . $endDate->toDateTimeString());
+            }
+        }
+
+        return back()->with('error', 'Please provide QR code data.');
     }
 }

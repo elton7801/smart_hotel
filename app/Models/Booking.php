@@ -14,8 +14,11 @@ class Booking extends Model
         'name',
         'email',
         'phone',
+        'status',
+        'payment_status',
         'start_date',
-        'end_date'
+        'end_date',
+        'qr_code'
     ];
 
     public function user()
