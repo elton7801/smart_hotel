@@ -76,8 +76,7 @@
                      <th class="th_deg">Phone</th>
                      <th class="th_deg">Arrival Date</th>
                      <th class="th_deg">Leaving Date</th>
-                     <th class="th_deg">Room Title</th>
-                     <th class="th_deg">Image</th>
+                     <th class="th_deg">Room Status</th>
                      <th class="th_deg">Action</th>
                   </tr>
 
@@ -88,10 +87,8 @@
                         <td>{{ $booking->user->phone ?? 'N/A' }}</td>
                         <td>{{ $booking->start_date }}</td>
                         <td>{{ $booking->end_date }}</td>
-                        <td>{{ $booking->room->room_title }}</td>
-                        <td style="text-align: center;">
-                            <img style="width:200px; display: inline-block;" src="/room/{{ $booking->room->image }}" alt="Room Image">
-                        </td>
+                        <td>{{ $booking->status }}</td>
+
                         <td>
                             <a class="btn btn-warning" href="{{ url('view_booking',$booking->id)}}">Check In</a>
                         </td>

@@ -64,12 +64,16 @@
                     <td>{{ $data->end_date }}</td>
                     <td>
 
-                        @if($data->status == 'approved')
-                        <span style='color:green'>Approved</span>
+                        @if($data->status == 'ready')
+                        <span style='color:green'>Room Ready</span>
                         @endif
 
-                        @if($data->status == 'reject')
-                        <span style='color:red'>Reject</span>
+                        @if($data->status == 'cancel')
+                        <span style='color:red'>Booking Cancelled</span>
+                        @endif
+
+                        @if($data->status == 'checkout')
+                        <span style='color:grey'>Check Out</span>
                         @endif
 
                         @if($data->status == 'waiting')
@@ -88,9 +92,9 @@
                     </td>
                     <td>
                         <span style="padding-bottom: 10px;">
-                            <a class="btn btn-success" href="{{ url('approve',$data->id) }}">Approve</a>
+                            <a class="btn btn-success" href="{{ url('approve',$data->id) }}">Ready</a>
                         </span>
-                        <a class="btn btn-warning" href="{{ url('reject_book',$data->id) }}">Rejected</a>
+                        <a class="btn btn-warning" href="{{ url('reject_book',$data->id) }}">Cancel</a>
                     </td>
                 </tr>
                 @endforeach

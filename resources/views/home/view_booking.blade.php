@@ -124,12 +124,16 @@
          <div class="image_container">
             <label>Check In QR</label>
 
-            @if($data->qr_code)
-               <img src="data:image/png;base64,{{ $data->qr_code }}" alt="QR Code">
+            @if(\Carbon\Carbon::parse($data->end_date)->isBefore(now()->startOfDay()))
+                <p>You have been automatically checked out. Thank you!</p>
+            @elseif($data->status == "reject")
+                <p>Your booking has been rejected. We will proceed with the refund. Sorry for any inconvenience.</p>
+            @elseif($data->qr_code)
+                <img src="data:image/png;base64,{{ $data->qr_code }}" alt="QR Code">
             @else
-               <p>Waiting Room To Be Clean</p>
+                <p>Waiting for the room to be cleaned.</p>
             @endif
-         </div>
+        </div>
 
       </div>
 

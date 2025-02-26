@@ -1,23 +1,14 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use Illuminate\Http\Request;
-
 use App\Models\Room;
-
 use App\Models\Booking;
-
 use App\Models\Contact;
-
 use App\Models\Gallary;
-
 use App\Models\User;
-
 use Stripe;
-
 use Session;
-
 use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
@@ -28,47 +19,6 @@ class HomeController extends Controller
 
         return view('home.room_details', compact('room'));
     }
-
-    public function add_booking(Request $request, $id)
-    {
-        // Validate input
-        $request->validate([
-            'startDate' => 'required|date',
-            'endDate' => 'required|date|after:startDate',
-        ]);
-
-        // Get room details (including quantity)
-        $room = Room::findOrFail($id);
-
-        // Count existing bookings for the selected room within the date range
-        $existingBookingsCount = Booking::where('room_id', $id)
-            ->where(function($query) use ($request) {
-                $query->where('start_date', '<=', $request->endDate)
-                    ->where('end_date', '>=', $request->startDate);
-            })
-            ->count();
-
-        // Check if the room quantity is still available
-        if ($existingBookingsCount >= $room->room_quantity) {
-            return redirect()->back()->with('message', 'Room is fully booked for the selected dates. Please try different dates.');
-        }
-
-        // Create a new booking
-        $data = new Booking;
-        $data->room_id = $id;
-        $data->user_id = Auth::id();
-        $data->name = $request->name;
-        $data->email = $request->email;
-        $data->phone = $request->phone;
-        $data->start_date = $request->startDate;
-        $data->end_date = $request->endDate;
-
-        // Save the booking
-        $data->save();
-
-        return redirect("confirm_booking/{$data->id}");
-    }
-
 
     public function contact(Request $request)
     {
@@ -130,42 +80,7 @@ class HomeController extends Controller
         return view('home.available_room', compact('availableRooms', 'checkIn', 'checkOut'));
     }
 
-    public function my_booking(){
 
-        if (!Auth::check()) {
-            return redirect()->route('login')->with('message', 'Please log in first.');
-        }
-
-        $user = Auth::user();
-
-        if ($user->usertype !== 'user') {
-            return redirect()->back()->with('message', 'Access Denied.');
-        }
-        $bookings = Booking::whereHas('user', function ($query) {
-            $query->where('email', Auth::user()->email);
-        })->with('room')->get();
-
-        return view('home.my_booking', compact('bookings'));
-    }
-
-    public function view_booking($id)
-    {
-        $data = Booking::find($id);
-        return view('home.view_booking', compact('data'));
-    }
-
-    public function confirm_booking($id)
-    {
-        $data = Booking::find($id);
-        return view('home.confirm_booking',compact('data'));
-    }
-
-    public function cancel_booking($id)
-    {
-        $data = Booking::with('room')->find($id);
-        $data->delete();
-        return redirect('my_booking');
-    }
     public function stripe($price)
 
     {
