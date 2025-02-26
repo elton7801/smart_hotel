@@ -50,6 +50,11 @@
                         </div>
 
                         <div class="div_deg">
+                            <label>Pax Number Limit</label>
+                            <input type="number" name="pax_number" required>
+                        </div>
+
+                        <div class="div_deg">
                             <label>Room Type</label>
                             <select name="type">
                                 <option value="regular">Regular</option>

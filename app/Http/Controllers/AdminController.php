@@ -60,6 +60,7 @@ class AdminController extends Controller
         $data->description = $request->description;
         $data->price = $request->price;
         $data->room_quantity = $request->room_quantity;
+        $data->pax_number = $request->pax_number;
         $data->wifi = $request->wifi;
         $data->room_type = $request->type;
         $image=$request->image;
@@ -107,6 +108,7 @@ class AdminController extends Controller
         $data->description = $request->description;
         $data->price = $request->price;
         $data->room_quantity = $request->room_quantity;
+        $data->pax_number = $request->pax_number;
         $data->wifi = $request->wifi;
         $data->room_type = $request->type;
 

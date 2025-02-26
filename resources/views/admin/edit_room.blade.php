@@ -56,6 +56,11 @@
                         </div>
 
                         <div class="div_deg">
+                            <label>Pax Number limit</label>
+                            <input type="number" name="pax_number" value="{{ $data->pax_number }}">
+                        </div>
+
+                        <div class="div_deg">
                             <label>Room Type</label>
                             <select name="type">
                                 <option selected value="{{ $data->room_type }}">{{ $data->room_type }}</option>
