@@ -6,12 +6,7 @@
                 <h2>Contact Us</h2>
              </div>
 
-             @if(session()->has('message'))
-             <div class="alert alert-success">
-                <button type="button" class="btn-close" data-bs-dismiss='alert'></button>
-                {{ session()->get('message') }}
-             </div>
-             @endif
+
 
           </div>
        </div>

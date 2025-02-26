@@ -62,33 +62,41 @@ class HomeController extends Controller
         $checkOut = $request->check_out;
         $pax = $request->pax;
 
-        // Fetch rooms that are available based on quantity
-        $availableRooms = Room::where('pax_number', '>=', $pax) // Ensure room can accommodate guests
-            ->whereDoesntHave('bookings', function ($query) use ($checkIn, $checkOut) {
-                $query->where(function ($q) use ($checkIn, $checkOut) {
-                    $q->whereBetween('start_date', [$checkIn, $checkOut])
-                      ->orWhereBetween('end_date', [$checkIn, $checkOut])
-                      ->orWhere(function ($q) use ($checkIn, $checkOut) {
-                          $q->where('start_date', '<=', $checkIn)
-                            ->where('end_date', '>=', $checkOut);
-                      });
-                });
-            })
-            ->orWhereHas('bookings', function ($query) use ($checkIn, $checkOut) {
-                $query->where(function ($q) use ($checkIn, $checkOut) {
-                    $q->whereBetween('start_date', [$checkIn, $checkOut])
-                      ->orWhereBetween('end_date', [$checkIn, $checkOut])
-                      ->orWhere(function ($q) use ($checkIn, $checkOut) {
-                          $q->where('start_date', '<=', $checkIn)
-                            ->where('end_date', '>=', $checkOut);
-                      });
+        // Check if there are any rooms that fit the capacity, ignoring availability
+        $roomsWithEnoughCapacity = Room::where('pax_number', '>=', $pax)->exists();
+
+        // Fetch available rooms based on capacity and booking status
+        $availableRooms = Room::where('pax_number', '>=', $pax)
+            ->where(function ($query) use ($checkIn, $checkOut) {
+                $query->whereDoesntHave('bookings', function ($q) use ($checkIn, $checkOut) {
+                    $q->where(function ($subQuery) use ($checkIn, $checkOut) {
+                        $subQuery->whereBetween('start_date', [$checkIn, $checkOut])
+                                 ->orWhereBetween('end_date', [$checkIn, $checkOut])
+                                 ->orWhere(function ($subQuery) use ($checkIn, $checkOut) {
+                                     $subQuery->where('start_date', '<=', $checkIn)
+                                              ->where('end_date', '>=', $checkOut);
+                                 });
+                    });
                 })
-                ->groupBy('room_id')
-                ->havingRaw('COUNT(*) < rooms.room_quantity'); // Ensures room still has available slots
+                ->orWhereHas('bookings', function ($q) use ($checkIn, $checkOut) {
+                    $q->where(function ($subQuery) use ($checkIn, $checkOut) {
+                        $subQuery->whereBetween('start_date', [$checkIn, $checkOut])
+                                 ->orWhereBetween('end_date', [$checkIn, $checkOut])
+                                 ->orWhere(function ($subQuery) use ($checkIn, $checkOut) {
+                                     $subQuery->where('start_date', '<=', $checkIn)
+                                              ->where('end_date', '>=', $checkOut);
+                                 });
+                    })
+                    ->groupBy('room_id')
+                    ->havingRaw('COUNT(*) < (SELECT room_quantity FROM rooms WHERE rooms.id = bookings.room_id)');
+                });
             })
             ->get();
 
         if ($availableRooms->isEmpty()) {
+            if (!$roomsWithEnoughCapacity) {
+                return redirect()->back()->with('message', 'No rooms available that fit the required capacity.');
+            }
             return redirect()->back()->with('message', 'No rooms available for the selected dates.');
         }
 

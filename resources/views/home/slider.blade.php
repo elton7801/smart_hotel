@@ -1,4 +1,10 @@
 <section class="banner_main position-relative">
+    @if(session()->has('message'))
+             <div class="alert alert-success">
+                <button type="button" class="btn-close" data-bs-dismiss='alert'></button>
+                {{ session()->get('message') }}
+             </div>
+             @endif
     <div id="myCarousel" class="carousel slide banner" data-ride="carousel">
         <ol class="carousel-indicators">
             <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
