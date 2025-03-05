@@ -38,6 +38,8 @@ class BookingController extends Controller
         // Update status to 'approved'
         $booking->status = 'ready';
 
+        $booking->room_number = $request->qrcode_content;
+
         // Get QR code content from frontend or use default
         $qrcodeContent = $request->input('qrcode_content', json_encode([
             'booking_id' => $booking->id,

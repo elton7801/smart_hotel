@@ -39,7 +39,6 @@
 
             <table class="table_deg">
                 <tr>
-                    <th class="th_deg">Room Id</th>
                     <th class="th_deg">Customer name</th>
                     <th class="th_deg">Email</th>
                     <th class="th_deg">Phone</th>
@@ -48,7 +47,7 @@
                     <th class="th_deg">Status</th>
                     <th class="th_deg">Payment</th>
                     <th class="th_deg">Room Title</th>
-                    <th class="th_deg">Price</th>
+                    <th class="th_deg">Room Number</th>
                     <th class="th_deg">Image</th>
                     <th class="th_deg">Delete</th>
                     <th class="th_deg">Status Update</th>
@@ -56,7 +55,6 @@
 
                 @foreach($data as $data)
                 <tr>
-                    <td>{{ $data->room_id }}</td>
                     <td>{{ $data->name }}</td>
                     <td>{{ $data->email }}</td>
                     <td>{{ $data->phone }}</td>
@@ -83,7 +81,7 @@
                     </td>
                     <td>{{ $data->payment_status }}</td>
                     <td>{{ $data->room->room_title }}</td>
-                    <td>{{ $data->room->price }}</td>
+                    <td>{{ $data->room_number }}</td>
                     <td>
                         <img style="width:200px" src="/room/{{ $data->room->image }}">
                     </td>

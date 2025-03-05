@@ -8,10 +8,12 @@ use App\Models\Room;
 use App\Models\Booking;
 use App\Models\Gallary;
 use App\Models\Contact;
+use App\Models\HousekeepingAssignment;
 use App\Notifications\SendEmailNotification;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Carbon\Carbon;
 use Notification;
+use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
 {
@@ -27,7 +29,15 @@ class AdminController extends Controller
                 $gallary = Gallary::all();
                 return view('home.index',compact('room','gallary'));
             }
+            if($usertype == 'staff')
+            {
+                $user = Auth::user(); // Get only the logged-in user
+                $assignments = HousekeepingAssignment::where('status', 'in progress')
+                    ->where('user_id', $user->id) // Only fetch assignments for logged-in staff
+                    ->get();
 
+                return view('staff.staffPage', compact('user', 'assignments'));
+            }
             if($usertype == 'admin')
             {
                 $user = User::all();
@@ -228,4 +238,38 @@ class AdminController extends Controller
 
         return back()->with('error', 'Please provide QR code data.');
     }
+
+    public function add_staff()
+    {
+        return view('admin.add_staff');
+    }
+
+    public function register_staff(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'phone' => 'nullable|string|max:20',
+            'password' => 'required|string|min:8',
+        ]);
+
+        $data = new User();
+        $data->name = $request->name;
+        $data->email = $request->email;
+        $data->phone = $request->phone;
+        $data->password = Hash::make($request->password);
+        $data->usertype = $request->usertype;
+
+        $data->save();
+        return redirect()->back()->with('success', 'Staff registered successfully!');
+    }
+
+    public function view_staff()
+    {
+        $users = User::where('usertype', 'staff')->get();
+        $assignments = HousekeepingAssignment::whereIn('status', ['in progress', 'done'])->get();
+
+        return view('admin.view_staff', compact('users', 'assignments'));
+    }
+
 }

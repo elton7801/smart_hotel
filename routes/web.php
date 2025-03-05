@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\staffController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -58,7 +59,12 @@ Route::get('/send_mail/{id}',[AdminController::class,'send_mail'])
 Route::post('/mail/{id}',[AdminController::class,'mail'])
 ->middleware(['auth','admin']);
 
+Route::get('/add_staff',[AdminController::class,'add_staff']);
 
+Route::post('/register_staff',[AdminController::class,'register_staff'])
+->middleware(['auth','admin']);
+
+Route::get('/view_staff',[AdminController::class,'view_staff']);
 
 
 //Home Controller
@@ -110,4 +116,18 @@ Route::get('/approve/{id}',[BookingController::class,'approve'])
 
 Route::get('/reject_book/{id}',[BookingController::class,'reject_book'])
 ->middleware(['auth','admin']);
+
+
+//staff Controller
+
+Route::get('/staffPage',[staffController::class,'roomsToClean']);
+
+Route::post('/assign_housekeeping', [staffController::class, 'assign_housekeeping']);
+
+Route::post('/doneClean/{id}', [staffController::class, 'doneClean']);
+
+
+
+
+
 
