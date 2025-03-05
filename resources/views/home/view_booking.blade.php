@@ -126,7 +126,7 @@
 
             @if(\Carbon\Carbon::parse($data->end_date)->isBefore(now()->startOfDay()))
                 <p>You have been automatically checked out. Thank you!</p>
-            @elseif($data->status == "reject")
+            @elseif($data->status == "cancel")
                 <p>Your booking has been rejected. We will proceed with the refund. Sorry for any inconvenience.</p>
             @elseif($data->qr_code)
                 <img src="data:image/png;base64,{{ $data->qr_code }}" alt="QR Code">
@@ -139,5 +139,6 @@
 
 
       @include('home.footer')
+      <script src="//code.tidio.co/2zz9vpjtxroyrgjo1yprppzulcongdjp.js" async></script>
    </body>
 </html>

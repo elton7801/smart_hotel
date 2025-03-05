@@ -41,16 +41,10 @@
       <!--  footer -->
       @include('home.footer')
 
-      <script type="text/javascript">
-        $(window).scroll(function() {
-            sessionStorage.scrolltop = $(this).scrolltop();
-        });
 
-        $(document).ready(function(){
-            if(sessionStorage.scrolltop != "undefined"){
-            $(window).scrolltop(sessionStorage.scrolltop);
-            }
-        });
-      </script>
+<script src="//code.tidio.co/2zz9vpjtxroyrgjo1yprppzulcongdjp.js" async></script>
+
+
+
    </body>
 </html>

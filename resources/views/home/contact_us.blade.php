@@ -28,5 +28,6 @@
       <!-- end contact -->
       <!--  footer -->
       @include('home.footer')
+      <script src="//code.tidio.co/2zz9vpjtxroyrgjo1yprppzulcongdjp.js" async></script>
    </body>
 </html>

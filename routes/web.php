@@ -110,3 +110,4 @@ Route::get('/approve/{id}',[BookingController::class,'approve'])
 
 Route::get('/reject_book/{id}',[BookingController::class,'reject_book'])
 ->middleware(['auth','admin']);
+
