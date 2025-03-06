@@ -21,7 +21,7 @@ use App\Http\Controllers\staffController;
 
 Route::get('/',[AdminController::class,'home']);
 
-Route::get('/home',[AdminController::class,'index'])->name('home');
+Route::get('/home',[AdminController::class,'index']);
 
 Route::get('/create_room',[AdminController::class,'create_room'])
 ->middleware(['auth','admin']);
@@ -66,6 +66,7 @@ Route::post('/register_staff',[AdminController::class,'register_staff'])
 
 Route::get('/view_staff',[AdminController::class,'view_staff']);
 
+Route::get('/dashboard',[AdminController::class,'dashboard']);
 
 //Home Controller
 
@@ -83,9 +84,9 @@ Route::get('/search_availability',[HomeController::class,'search_availability'])
 
 Route::controller(HomeController::class)->group(function(){
 
-    Route::get('stripe/{price}', 'stripe');
+    Route::get('stripe/{id}', 'stripe');
 
-    Route::post('stripe/{price}', 'stripePost')->name('stripe.post');
+    Route::post('stripe/{id}', 'stripePost')->name('stripe.post');
 
 });
 

@@ -113,7 +113,7 @@
 
          <div class="info_row">
             <label>Room Price:</label>
-            <span>${{ $data->room->price }}</span>
+            <span>RM {{ $data->room->price }}</span>
          </div>
 
          <div class="info_row">
@@ -132,7 +132,7 @@
          </div>
          <td>
             <a style="margin-top: 20px;" onclick="return confirm ('confirm Delete ?')" class="btn btn-danger" href="{{ url('cancel_booking',$data->id)}}">Cancel Booking</a>
-            <a style="margin-top: 20px;" class="btn btn-success" href="{{ url('stripe', $data->room->price) }}">Proceed To Payment</a>
+            <a style="margin-top: 20px;" class="btn btn-success" href="{{ url('stripe', $data->id) }}">Proceed To Payment</a>
         </td>
       </div>
 

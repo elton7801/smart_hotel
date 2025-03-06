@@ -14,6 +14,7 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Carbon\Carbon;
 use Notification;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
 {
@@ -270,6 +271,61 @@ class AdminController extends Controller
         $assignments = HousekeepingAssignment::whereIn('status', ['in progress', 'done'])->get();
 
         return view('admin.view_staff', compact('users', 'assignments'));
+    }
+
+    public function dashboard()
+    {
+        $rooms = Room::all();
+        $galleries = Gallary::all();
+        $msg = Contact::count();
+        $housekeeping = HousekeepingAssignment::where('status','in progress')->count();
+        $housekeepingDone = HousekeepingAssignment::where('status','done')->count();
+        $housekeepingRoom = HousekeepingAssignment::where('status','in progress')->pluck('room_number');
+        $totalUsers = User::count();
+        $totalRooms = Room::sum('room_quantity');
+        $totalBookings = Booking::count();
+        $totalRevenue = Booking::sum('total_price');
+        $availableRooms = Room::whereDoesntHave('bookings')->count();
+        $mostBookedRoom = Room::withCount('bookings')->orderByDesc('bookings_count')->first();
+
+        // Monthly Bookings Statistics
+        $monthlyStats = Booking::selectRaw('
+                MONTH(start_date) as month,
+                COUNT(id) as total_bookings,
+                COALESCE(SUM(total_price), 0) as total_income
+            ')
+            ->whereYear('start_date', Carbon::now()->year)
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get();
+
+        // Ensure all months are included (Jan - Dec)
+        $allMonths = collect(range(1, 12))->map(function ($month) use ($monthlyStats) {
+            $stat = $monthlyStats->firstWhere('month', $month);
+            return [
+                'month' => Carbon::create()->month($month)->format('F'),
+                'total_bookings' => $stat->total_bookings ?? 0,
+                'total_income' => $stat->total_income ?? 0,
+            ];
+        });
+
+        // Room Bookings Count (Using JOIN with Room table)
+        $roomBookings = DB::table('rooms')
+            ->leftJoin('bookings', 'rooms.id', '=', 'bookings.room_id')
+            ->select('rooms.room_title', DB::raw('COUNT(bookings.id) as total_bookings'))
+            ->groupBy('rooms.room_title')
+            ->orderByDesc('total_bookings')
+            ->get();
+
+        $roomTitles = $roomBookings->pluck('room_title'); // Room titles
+        $roomBookingCounts = $roomBookings->pluck('total_bookings'); // Number of times booked
+
+
+
+        return view('admin.dashboard', compact(
+            'rooms', 'galleries', 'totalUsers', 'totalRooms', 'totalBookings', 'totalRevenue','housekeepingRoom',
+            'availableRooms', 'mostBookedRoom', 'allMonths', 'roomTitles', 'roomBookingCounts','msg','housekeeping', 'housekeepingDone'
+        ));
     }
 
 }

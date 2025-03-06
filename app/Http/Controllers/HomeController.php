@@ -107,20 +107,22 @@ class HomeController extends Controller
     }
 
 
-    public function stripe($price)
+    public function stripe($id)
 
     {
-        return view('home.stripe', compact('price'));
+        $booking = Booking::findOrFail($id);
+        return view('home.stripe', compact('booking'));
     }
 
-    public function stripePost(Request $request, $price)
+    public function stripePost(Request $request, $id)
     {
+        $booking = Booking::findOrFail($id);
         Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
 
         try {
             // Process payment
             Stripe\Charge::create([
-                "amount" => $price * 100,
+                "amount" => $booking->total_price * 100,
                 "currency" => "myr",
                 "source" => $request->stripeToken,
                 "description" => "Room Booking payment"

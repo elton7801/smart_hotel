@@ -18,6 +18,8 @@ class Booking extends Model
         'payment_status',
         'start_date',
         'end_date',
+        'nights',
+        'total_price',
         'qr_code'
     ];
 

@@ -33,7 +33,7 @@
                 <div class="panel-heading display-table" >
 
                         <h3 class="panel-title" >Payment Details</h3>
-                        <h4>You need to pay RM {{ $price }}</h4>
+                        <h4>You need to pay RM {{ $booking->total_price }}</h4>
                 </div>
 
                 <div class="panel-body">
@@ -58,7 +58,7 @@
 
                             role="form"
 
-                            action="{{ route('stripe.post', $price) }}"
+                            action="{{ route('stripe.post', $booking->id) }}"
 
                             method="post"
 

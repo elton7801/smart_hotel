@@ -51,7 +51,7 @@
                        <h3>{{ $room->room_title }}</h3>
                        <p style="padding:12px">{{ $room->description }}</p>
                        <h4 style="padding:12px">Free Wifi : {{ $room->wifi }}</h4>
-                       <h4 style="padding:12px">Room Type : {{ $room->type }}</h4>
+                       <h4 style="padding:12px">Room Type : {{ $room->room_type }}</h4>
                        <h3 style="padding:12px">Room Price : {{ $room->price }}</h3>
                     </div>
                  </div>
