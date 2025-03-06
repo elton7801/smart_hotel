@@ -96,14 +96,19 @@ class BookingController extends Controller
             'endDate' => 'required|date|after:startDate',
         ]);
 
+        // Retrieve session values
+        $checkIn = session('check_in', $request->startDate);
+        $checkOut = session('check_out', $request->endDate);
+
+
         // Get room details (including quantity)
         $room = Room::findOrFail($id);
 
         // Count existing bookings for the selected room within the date range
         $existingBookingsCount = Booking::where('room_id', $id)
-            ->where(function($query) use ($request) {
-                $query->where('start_date', '<=', $request->endDate)
-                    ->where('end_date', '>=', $request->startDate);
+            ->where(function($query) use ($checkIn, $checkOut) {
+                $query->where('start_date', '<=', $checkOut)
+                    ->where('end_date', '>=', $checkIn);
             })
             ->count();
 
@@ -119,14 +124,15 @@ class BookingController extends Controller
         $data->name = $request->name;
         $data->email = $request->email;
         $data->phone = $request->phone;
-        $data->start_date = $request->startDate;
-        $data->end_date = $request->endDate;
+        $data->start_date = $checkIn;
+        $data->end_date = $checkOut;
 
         // Save the booking
         $data->save();
 
         return redirect("confirm_booking/{$data->id}");
     }
+
 
     public function my_booking()
     {

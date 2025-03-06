@@ -102,11 +102,11 @@
                 </div>
                 <div>
                     <label>Start Date</label>
-                    <input type="date" name="startDate" id="startDate">
+                    <input type="date" name="startDate" value="{{ request('startDate', session('check_in')) }}" required>
                 </div>
                 <div>
                     <label>End Date</label>
-                    <input type="date" name="endDate" id="endDate">
+                    <input type="date" name="endDate" value="{{ request('endDate', session('check_out')) }}" required>
                 </div>
                 <div style="padding-top: 20px">
                     <input type="submit" style="background-color: skyblue" class="btn btn-primary" value="Book Room">

@@ -62,6 +62,9 @@ class HomeController extends Controller
         $checkOut = $request->check_out;
         $pax = $request->pax;
 
+        // Store search parameters in session
+        session(['check_in' => $checkIn, 'check_out' => $checkOut, 'pax' => $pax]);
+
         // Check if there are any rooms that fit the capacity, ignoring availability
         $roomsWithEnoughCapacity = Room::where('pax_number', '>=', $pax)->exists();
 
