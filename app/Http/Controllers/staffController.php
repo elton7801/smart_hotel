@@ -12,47 +12,56 @@ class staffController extends Controller
 
     public function assign_housekeeping(Request $request)
     {
-        // Validate input
+        // Validate input structure
         $request->validate([
             'assignments' => 'required|array',
         ]);
 
         foreach ($request->assignments as $userId => $times) {
-            foreach ($times as $timeSlot => $roomNumber) {
-                if (!empty($roomNumber)) { // Ensure a room number is provided
-                    $assignment = HousekeepingAssignment::where('user_id', $userId)
+            foreach ($times as $timeSlot => $data) {
+                // Extract room number & addons safely
+                $roomNumber = $data['room_number'] ?? null;
+                $addons = isset($data['addon']) ? implode(',', $data['addon']) : null;
+
+                if (!empty($roomNumber)) {
+                    // Retrieve existing assignment if it exists
+                    $existingAssignment = HousekeepingAssignment::where('user_id', $userId)
                         ->where('time_slot', $timeSlot)
                         ->first();
 
-                        if ($assignment) {
-                            // Check if the room number has changed
-                            if ($assignment->room_number !== $roomNumber) {
-                                $assignment->update([
-                                    'room_number' => $roomNumber,
-                                    'status' => 'in progress', // Change status to 'in progress' only for updated entries
-                                ]);
-                            }
-                        } else {
-                            // Create new assignment if it doesn't exist
-                            HousekeepingAssignment::create([
-                                'user_id' => $userId,
-                                'room_number' => $roomNumber,
-                                'time_slot' => $timeSlot,
-                                'status' => 'in progress',
-                            ]);
-                        }
+                    // Determine if an update is needed
+                    if (!$existingAssignment ||
+                        $existingAssignment->room_number !== $roomNumber ||
+                        $existingAssignment->special_request !== $addons) {
 
+                        HousekeepingAssignment::updateOrCreate(
+                            [
+                                'user_id' => $userId,
+                                'time_slot' => $timeSlot,
+                            ],
+                            [
+                                'room_number' => $roomNumber,
+                                'special_request' => $addons,
+                                'status' => 'in progress', // Always reset to 'in progress' when updated
+                            ]
+                        );
+                    }
                 }
             }
         }
 
-        // Fetch updated data
-        $users = User::where('usertype', 'staff')->get();
-        $assignments = HousekeepingAssignment::whereIn('status', ['in progress', 'done'])->get();
-
-        return view('admin.view_staff', compact('users', 'assignments'))
-            ->with('success', 'Housekeeping assignments updated successfully!');
+        return redirect()->back()->with('success', 'Housekeeping assignments updated successfully!');
     }
+
+    public function viewHousekeepingAssignments()
+    {
+        $users = User::where('usertype', 'staff')->get();
+        $assignments = HousekeepingAssignment::all();
+
+        return view('admin.view_staff', compact('users', 'assignments'));
+    }
+
+
 
     public function roomsToClean()
     {

@@ -126,6 +126,13 @@
             <span>{{ $data->end_date }}</span>
          </div>
 
+         @if (!empty($data->special_request))
+            <div class="info_row">
+                <label>Selected Add-ons:</label>
+                <span>{{ $data->special_request }}</span>
+            </div>
+        @endif
+
          <div class="image_container">
             <label>Room Image:</label>
             <img src="/room/{{ $data->room->image }}" alt="Room Image">

@@ -52,7 +52,7 @@
                                 </div>
                                 <div class="col-md-8">
                                     <label class="fw-bold text-white">Number of Guests (Pax):</label>
-                                    <select class="#pax" name="pax" id="pax" class="form-control rounded-pill" required>
+                                    <select name="pax" id="pax" class="form-control rounded-pill pax-dropdown" required>
                                         <option value="" disabled selected>Select Guests</option>
                                         @for ($i = 1; $i <= 10; $i++)
                                             <option value="{{ $i }}">{{ $i }} {{ $i == 1 ? 'Person' : 'People' }}</option>

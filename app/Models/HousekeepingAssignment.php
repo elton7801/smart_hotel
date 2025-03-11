@@ -13,6 +13,7 @@ class HousekeepingAssignment extends Model
         'user_id',
         'room_number',
         'time_slot',
+        'special_request',
         'status',
     ];
 }

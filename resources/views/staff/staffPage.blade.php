@@ -147,6 +147,7 @@
                 <tr>
                     <th>Room Number</th>
                     <th>Time Slot</th>
+                    <th>Add on</th>
                     <th>Status</th>
                     <th>Action</th>
                 </tr>
@@ -155,6 +156,7 @@
                     <tr class="{{ $assignment->status == 'done' ? 'status-done' : 'status-in-progress' }}">
                         <td>{{ $assignment->room_number }}</td>
                         <td>{{ $assignment->time_slot }}</td>
+                        <td>{{ $assignment->special_request }}</td>
                         <td>{{ ucfirst($assignment->status) }}</td>
                         <td>
                             @if($assignment->status == 'in progress')

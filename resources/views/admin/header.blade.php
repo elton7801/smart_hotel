@@ -1,3 +1,4 @@
+
 <header class="header">
     <nav class="navbar navbar-expand-lg">
       <div class="search-panel">
@@ -17,10 +18,8 @@
 
 
           <!-- Log out               -->
-          <div class="list-inline-item logout">
-            <x-app-layout>
-
-            </x-app-layout>
+          <div class="list-inline-item logout" style="color: rgb(250, 250, 250);">
+            <x-app-layout></x-app-layout>
         </div>
       </div>
     </nav>

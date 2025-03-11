@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Models\Booking;
 use App\Models\Room;
 use Carbon\Carbon;
+use DB;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -90,55 +91,71 @@ class BookingController extends Controller
 
     public function add_booking(Request $request, $id)
     {
-        {
-            // Validate input
-            $request->validate([
-                'startDate' => 'required|date',
-                'endDate' => 'required|date|after:startDate',
-            ]);
+        // Validate input
+        $request->validate([
+            'startDate' => 'required|date',
+            'endDate' => 'required|date|after:startDate',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'phone' => 'required|string|max:20',
+        ]);
 
-            // Retrieve session values or use request data
-            $checkIn = session('check_in', $request->startDate);
-            $checkOut = session('check_out', $request->endDate);
+        // Retrieve session values or use request data
+        $checkIn = session('check_in', $request->startDate);
+        $checkOut = session('check_out', $request->endDate);
 
-            // Get room details (including price and quantity)
-            $room = Room::findOrFail($id);
+        // Fetch room details
+        $room = Room::findOrFail($id);
 
-            // Calculate number of nights
-            $nights = Carbon::parse($checkIn)->diffInDays(Carbon::parse($checkOut));
+        // Calculate number of nights
+        $nights = Carbon::parse($checkIn)->diffInDays(Carbon::parse($checkOut));
 
-            // Calculate total price
-            $totalPrice = $nights * $room->price; // Assumes room has a price_per_night field
+        // Ensure price field is correct
+        $totalPrice = $nights * $room->price;
 
-            // Count existing bookings for the selected room within the date range
-            $existingBookingsCount = Booking::where('room_id', $id)
-                ->where(function($query) use ($checkIn, $checkOut) {
-                    $query->where('start_date', '<', $checkOut)
-                          ->where('end_date', '>', $checkIn);
-                })
-                ->count();
+        // Count existing bookings for this room within the date range
+        $existingBookingsCount = Booking::where('room_id', $id)
+            ->where(function ($query) use ($checkIn, $checkOut) {
+                $query->where('start_date', '<', $checkOut)
+                      ->where('end_date', '>', $checkIn);
+            })
+            ->count();
 
-            // Check if the room quantity is still available
-            if ($existingBookingsCount >= $room->room_quantity) {
-                return redirect()->back()->with('message', 'Room is fully booked for the selected dates. Please try different dates.');
+        // Check if the room is still available
+        if ($existingBookingsCount >= $room->room_quantity) {
+            return redirect()->back()->with('message', 'Room is fully booked for the selected dates. Please try different dates.');
+        }
+
+        // Ensure the user is logged in
+        if (!Auth::check()) {
+            return redirect()->back()->with('message', 'You must be logged in to book a room.');
+        }
+
+        // Save booking using a transaction
+        DB::beginTransaction();
+        try {
+            $booking = new Booking();
+            $booking->room_id = $id;
+            $booking->user_id = Auth::id();
+            $booking->name = $request->name;
+            $booking->email = $request->email;
+            $booking->phone = $request->phone;
+            $booking->start_date = $checkIn;
+            $booking->end_date = $checkOut;
+            $booking->nights = $nights;
+            $booking->total_price = $totalPrice;
+
+            if ($request->has('addon')) {
+                $booking->special_request = implode(',', $request->addon);
             }
 
-            // Create a new booking
-            $data = new Booking;
-            $data->room_id = $id;
-            $data->user_id = Auth::id();
-            $data->name = $request->name;
-            $data->email = $request->email;
-            $data->phone = $request->phone;
-            $data->start_date = $checkIn;
-            $data->end_date = $checkOut;
-            $data->nights = $nights;
-            $data->total_price = $totalPrice;
+            $booking->save();
+            DB::commit();
 
-            // Save the booking
-            $data->save();
-
-            return redirect("confirm_booking/{$data->id}");
+            return redirect("confirm_booking/{$booking->id}");
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('message', 'An error occurred while booking. Please try again.');
         }
     }
 

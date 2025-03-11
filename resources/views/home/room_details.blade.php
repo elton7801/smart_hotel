@@ -37,7 +37,7 @@
               <div class="col-md-12">
                  <div class="titlepage">
                     <h2>Our Room</h2>
-                    <p>Lorem Ipsum available, but the majority have suffered </p>
+
                  </div>
               </div>
            </div>
@@ -108,9 +108,19 @@
                     <label>End Date</label>
                     <input type="date" name="endDate" value="{{ request('endDate', session('check_out')) }}" required>
                 </div>
+                <div>
+                    <label>Add On</label><br>
+                    <input type="checkbox" id="pillow" name="addon[]" value="pillow">
+                    <label for="pillow">Pillow</label><br>
+
+                    <input type="checkbox" id="blanket" name="addon[]" value="blanket">
+                    <label for="blanket">Blanket</label><br>
+
+                    <input type="checkbox" id="bed" name="addon[]" value="bed">
+                    <label for="bed">Bed</label><br>
+                </div>
                 <div style="padding-top: 20px">
                     <input type="submit" style="background-color: skyblue" class="btn btn-primary" value="Book Room">
-
                 </div>
                 </form>
               </div>

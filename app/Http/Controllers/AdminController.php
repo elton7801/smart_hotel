@@ -265,13 +265,7 @@ class AdminController extends Controller
         return redirect()->back()->with('success', 'Staff registered successfully!');
     }
 
-    public function view_staff()
-    {
-        $users = User::where('usertype', 'staff')->get();
-        $assignments = HousekeepingAssignment::whereIn('status', ['in progress', 'done'])->get();
 
-        return view('admin.view_staff', compact('users', 'assignments'));
-    }
 
     public function dashboard()
     {

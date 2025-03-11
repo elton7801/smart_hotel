@@ -2,6 +2,36 @@
 <html lang="en">
    <head>
     @include('home.css')
+    <style>
+    .room-title {
+        font-size: 3rem;
+        font-weight: bold;
+        color: #007bff;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        position: relative;
+        display: inline-block;
+        padding-bottom: 10px;
+    }
+
+    .room-title::after {
+        content: "";
+        width: 80px;
+        height: 4px;
+        background-color: #ffcc00;
+        display: block;
+        margin: 10px auto 0;
+        border-radius: 2px;
+    }
+
+    .room-subtitle {
+        font-size: 1.2rem;
+        color: #666;
+        font-weight: 500;
+    }
+
+    </style>
    </head>
    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
@@ -22,7 +52,10 @@
     @include('home.header')
       </header>
       <div class="our_room">
-        <h1>Room available</h1>
+        <div class="text-center mt-4">
+            <h1 class="room-title">✨ Available Rooms ✨</h1>
+            <p class="room-subtitle">Find the perfect stay for your comfort and relaxation.</p>
+        </div>
         <div class="container">
             <div class="row">
                 @if(session()->has('message'))

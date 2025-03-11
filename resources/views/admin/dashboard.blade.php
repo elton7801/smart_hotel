@@ -53,29 +53,36 @@
         }
 
         .wave-container {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            justify-content: center;
-            align-items: center;
-            margin-top: 20px;
-        }
+            width: 100%;
+}
 
         .wave-room {
             display: flex;
             align-items: center;
             justify-content: space-between;
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
+            padding: 15px;
+            border: 1px solid #242222;
             border-radius: 5px;
-            background-color: #f9f9f9;
+            background-color: #292525;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 10px;
         }
 
         .wave-room-number {
             font-size: 16px;
             font-weight: bold;
-            flex: 1;
+            flex: 2; /* Takes more space */
+            text-align: left;
+        }
+
+        .wave {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #3498db;
+            animation: waveAnimation 1.5s infinite ease-in-out;
+            flex-shrink: 0;
         }
 
         .wave-status {
@@ -84,6 +91,22 @@
             flex: 1;
             text-align: right;
         }
+
+        /* Responsive fix */
+    @media (max-width: 768px) {
+        .wave-room {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .wave-room-number,
+        .wave-status {
+            text-align: center;
+            width: 100%;
+            margin-bottom: 5px;
+        }
+    }
+
     </style>
 </head>
 <body>

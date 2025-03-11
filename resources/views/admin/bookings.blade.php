@@ -47,9 +47,9 @@
                     <th class="th_deg">Status</th>
                     <th class="th_deg">Payment</th>
                     <th class="th_deg">Room Title</th>
+                    <th class="th_deg">Special Request</th>
                     <th class="th_deg">Room Number</th>
                     <th class="th_deg">Image</th>
-                    <th class="th_deg">Delete</th>
                     <th class="th_deg">Status Update</th>
                 </tr>
 
@@ -81,18 +81,22 @@
                     </td>
                     <td>{{ $data->payment_status }}</td>
                     <td>{{ $data->room->room_title }}</td>
+                    <td>
+                        @if (!empty($data->special_request))
+                                <span>{{ $data->special_request }}</span>
+                        @endif
+                    </td>
                     <td>{{ $data->room_number }}</td>
                     <td>
                         <img style="width:200px" src="/room/{{ $data->room->image }}">
                     </td>
-                    <td>
-                        <a onclick="return confirm('confirm Delete ?');" class="btn btn-danger" href="{{ url('delete_booking', $data->id) }}">Delete</a>
-                    </td>
+
                     <td>
                         <span style="padding-bottom: 10px;">
                             <a class="btn btn-success" href="{{ url('approve',$data->id) }}">Ready</a>
                         </span>
-                        <a class="btn btn-warning" href="{{ url('reject_book',$data->id) }}">Cancel</a>
+                            <a class="btn btn-warning" href="{{ url('reject_book',$data->id) }}">Cancel</a>
+                            <a onclick="return confirm('confirm Delete ?');" class="btn btn-danger" href="{{ url('delete_booking', $data->id) }}">Delete</a>
                     </td>
                 </tr>
                 @endforeach

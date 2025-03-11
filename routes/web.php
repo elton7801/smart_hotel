@@ -64,8 +64,6 @@ Route::get('/add_staff',[AdminController::class,'add_staff']);
 Route::post('/register_staff',[AdminController::class,'register_staff'])
 ->middleware(['auth','admin']);
 
-Route::get('/view_staff',[AdminController::class,'view_staff']);
-
 Route::get('/dashboard',[AdminController::class,'dashboard']);
 
 //Home Controller
@@ -122,6 +120,8 @@ Route::get('/reject_book/{id}',[BookingController::class,'reject_book'])
 //staff Controller
 
 Route::get('/staffPage',[staffController::class,'roomsToClean']);
+
+Route::get('/view_staff', [staffController::class, 'viewHousekeepingAssignments']);
 
 Route::post('/assign_housekeeping', [staffController::class, 'assign_housekeeping']);
 
