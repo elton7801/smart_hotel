@@ -79,7 +79,7 @@
    <body>
       <!-- loader -->
       <div class="loader_bg">
-         <div class="loader"><img src="images/loading.gif" alt="#"/></div>
+        <div class="loader"><img src="{{ asset('images/loading.gif') }}" alt="Loading..."/></div>
       </div>
 
       <!-- header -->
@@ -132,11 +132,17 @@
             <label>Check In QR</label>
 
             @if(\Carbon\Carbon::parse($data->end_date)->isBefore(now()->startOfDay()))
-                <p>You have been automatically checked out. Thank you!</p>
+                <p>You have been automatically checked out. Thank you!
+                    <a href="{{ url('extend_validity', $data->id) }}" style="color: blue; text-decoration: underline;">
+                        Opps, Something forgotten?
+                    </a>
+                </p>
             @elseif($data->status == "cancel")
                 <p>Your booking has been rejected. We will proceed with the refund. Sorry for any inconvenience.</p>
-            @elseif($data->qr_code)
+            @elseif($data->qr_code && \Carbon\Carbon::parse($data->start_date)->toDateString() == now()->toDateString())
                 <img src="data:image/png;base64,{{ $data->qr_code }}" alt="QR Code">
+            @elseif($data->qr_code && \Carbon\Carbon::parse($data->start_date)->toDateString() != now()->toDateString())
+                <p>Your room is Ready, you may prepare to check-in whenever the check-in time reach.</p>
             @else
                 <p>Waiting for the room to be cleaned.</p>
             @endif

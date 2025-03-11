@@ -83,8 +83,11 @@ Route::get('/search_availability',[HomeController::class,'search_availability'])
 Route::controller(HomeController::class)->group(function(){
 
     Route::get('stripe/{id}', 'stripe');
-
     Route::post('stripe/{id}', 'stripePost')->name('stripe.post');
+
+    Route::get('extend_validity/{id}', 'viewStripeExtend');
+    Route::post('payExtend/{id}', 'stripeExtend')->name('payExtend');
+
 
 });
 

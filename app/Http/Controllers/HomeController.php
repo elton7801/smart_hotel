@@ -113,6 +113,12 @@ class HomeController extends Controller
         $booking = Booking::findOrFail($id);
         return view('home.stripe', compact('booking'));
     }
+    public function viewStripeExtend($id)
+
+    {
+        $booking = Booking::findOrFail($id);
+        return view('home.stripeExtend', compact('booking'));
+    }
 
     public function stripePost(Request $request, $id)
     {
@@ -148,4 +154,33 @@ class HomeController extends Controller
         }
     }
 
+    public function stripeExtend(Request $request, $id)
+    {
+        $booking = Booking::findOrFail($id);
+        Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+
+        try {
+            // Process payment
+            Stripe\Charge::create([
+                "amount" => 30 * 100,
+                "currency" => "myr",
+                "source" => $request->stripeToken,
+                "description" => "Extend Room validity payment"
+            ]);
+
+            // Extend booking by 1 day
+            $booking->end_date = \Carbon\Carbon::parse($booking->end_date)->addMinutes(30);
+            $booking->save();
+
+            \Log::info('✅ Stripe payment successful. Redirecting to my_booking page...');
+
+            // Use absolute URL instead of route name
+            return redirect(url('/my_booking'))->with('success', 'Payment successful! Your booking has been extended.');
+
+        } catch (\Exception $e) {
+            \Log::error('❌ Stripe Payment Error: ' . $e->getMessage());
+
+            return redirect()->back()->with('error', 'Payment failed. Please try again.');
+        }
+    }
 }

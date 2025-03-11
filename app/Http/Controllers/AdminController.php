@@ -275,7 +275,7 @@ class AdminController extends Controller
         $housekeeping = HousekeepingAssignment::where('status','in progress')->count();
         $housekeepingDone = HousekeepingAssignment::where('status','done')->count();
         $housekeepingRoom = HousekeepingAssignment::where('status','in progress')->pluck('room_number');
-        $totalUsers = User::count();
+        $totalUsers = User::where('usertype', 'user')->count();
         $totalRooms = Room::sum('room_quantity');
         $totalBookings = Booking::count();
         $totalRevenue = Booking::sum('total_price');

@@ -33,7 +33,7 @@
 
 
 
-    <h1 class="payment-heading">Secure Payment for Your Room Reservation</h1>
+    <h1 class="payment-heading">Payment for your Room duration Extension</h1>
 
 
 
@@ -46,7 +46,7 @@
                 <div class="panel-heading display-table" >
 
                         <h3 class="panel-title" >Payment Details</h3>
-                        <h4>You need to pay RM {{ $booking->total_price }}</h4>
+                        <h4>You need to pay RM 30</h4>
                 </div>
 
                 <div class="panel-body">
@@ -71,7 +71,7 @@
 
                             role="form"
 
-                            action="{{ route('stripe.post', $booking->id) }}"
+                            action="{{ route('payExtend', $booking->id) }}"
 
                             method="post"
 
@@ -196,6 +196,7 @@
 
 
 </body>
+
 
 
 

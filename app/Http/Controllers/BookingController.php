@@ -104,11 +104,18 @@ class BookingController extends Controller
         $checkIn = session('check_in', $request->startDate);
         $checkOut = session('check_out', $request->endDate);
 
+        // Set fixed check-in and check-out times
+        $checkIn = Carbon::parse($checkIn)->setTime(15, 0, 0); // 3:00 PM
+        $checkOut = Carbon::parse($checkOut)->setTime(12, 0, 0); // 12:00 PM
+
         // Fetch room details
         $room = Room::findOrFail($id);
 
         // Calculate number of nights
-        $nights = Carbon::parse($checkIn)->diffInDays(Carbon::parse($checkOut));
+        $nights = $checkIn->diffInDays($checkOut);
+        if($nights == 0){
+            $nights=1;
+        }
 
         // Ensure price field is correct
         $totalPrice = $nights * $room->price;
