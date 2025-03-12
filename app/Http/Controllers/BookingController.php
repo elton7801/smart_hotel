@@ -11,9 +11,21 @@ use Illuminate\Support\Facades\Auth;
 
 class BookingController extends Controller
 {
-    public function bookings()
+    public function bookings(Request $request)
     {
-        $data=Booking::all();
+        $query = Booking::with('room');
+
+        // Apply Date Filter
+        if ($request->filled('start_date')) {
+            $query->whereDate('start_date', '>=', $request->start_date);
+        }
+
+        if ($request->filled('end_date')) {
+            $query->whereDate('end_date', '<=', $request->end_date);
+        }
+        // Paginate the results (10 per page)
+        $data = $query->paginate(10)->appends($request->query());
+
         return view('admin.bookings', compact('data'));
     }
 

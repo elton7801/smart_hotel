@@ -177,6 +177,8 @@ class AdminController extends Controller
     public function message()
     {
         $data = Contact::all();
+
+        $data = Contact::paginate(10);
         return view('admin.message', compact('data'));
     }
 
