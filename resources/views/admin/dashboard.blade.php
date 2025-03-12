@@ -3,6 +3,7 @@
 <head>
     @include('admin.css')
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         /* Wave animation */
         .wave-loader {
@@ -179,7 +180,7 @@
         <section class="no-padding-top no-padding-bottom">
             <div class="container-fluid">
                 <div class="row">
-                    <div class="col-md-3 col-sm-6">
+                    <div class="col-md-2 col-sm-6">
                         <div class="statistic-block block">
                             <div class="progress-details d-flex align-items-end justify-content-between">
                                 <div class="title"><i class="icon-user-1"></i><strong>Total Message Receive</strong></div>
@@ -187,7 +188,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3 col-sm-6">
+                    <div class="col-md-2 col-sm-6">
                         <div class="statistic-block block">
                             <div class="progress-details d-flex align-items-end justify-content-between">
                                 <div class="title"><i class="icon-contract"></i><strong>Total Rooms still in cleaning</strong></div>
@@ -195,11 +196,33 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3 col-sm-6">
+                    <div class="col-md-2 col-sm-6">
                         <div class="statistic-block block">
                             <div class="progress-details d-flex align-items-end justify-content-between">
                                 <div class="title"><i class="icon-paper-and-pencil"></i><strong>Total Rooms that have been cleaned</strong></div>
                                 <div class="number dashtext-3">{{ $housekeepingDone }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-sm-6">
+                        <div class="statistic-block block">
+                            <div class="progress-details d-flex align-items-end justify-content-between">
+                                <div class="title">
+                                    <i class="icon-paper-and-pencil"></i>
+                                    <strong>Average Rating</strong>
+                                </div>
+                                <div class="number dashtext-3">
+                                    <strong>{{ number_format($averageRating, 1) }}</strong>
+                                    @for ($i = 1; $i <= 5; $i++)
+                                        @if ($i <= floor($averageRating))
+                                            <i class="fas fa-star text-warning"></i> {{-- Full Star --}}
+                                        @elseif ($i - $averageRating < 1)
+                                            <i class="fas fa-star-half-alt text-warning"></i> {{-- Half Star --}}
+                                        @else
+                                            <i class="far fa-star text-warning"></i> {{-- Empty Star --}}
+                                        @endif
+                                    @endfor
+                                </div>
                             </div>
                         </div>
                     </div>

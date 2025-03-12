@@ -272,6 +272,7 @@ class AdminController extends Controller
         $rooms = Room::all();
         $galleries = Gallary::all();
         $msg = Contact::count();
+        $averageRating = Contact::avg('rating');
         $housekeeping = HousekeepingAssignment::where('status','in progress')->count();
         $housekeepingDone = HousekeepingAssignment::where('status','done')->count();
         $housekeepingRoom = HousekeepingAssignment::where('status','in progress')->pluck('room_number');
@@ -318,7 +319,7 @@ class AdminController extends Controller
 
         return view('admin.dashboard', compact(
             'rooms', 'galleries', 'totalUsers', 'totalRooms', 'totalBookings', 'totalRevenue','housekeepingRoom',
-            'availableRooms', 'mostBookedRoom', 'allMonths', 'roomTitles', 'roomBookingCounts','msg','housekeeping', 'housekeepingDone'
+            'availableRooms', 'mostBookedRoom', 'allMonths', 'roomTitles', 'roomBookingCounts','msg','housekeeping', 'housekeepingDone','averageRating'
         ));
     }
 
