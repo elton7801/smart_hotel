@@ -33,6 +33,22 @@
             <div class="container-fluid">
                 <div>
                     <h1 class="booking_title">Edit Room</h1>
+                    @if (session('success'))
+                        <div class="alert alert-success">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+
+
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
                     <form action="{{ url('update_room',$data->id) }}" method="post" enctype="multipart/form-data">
                         @csrf
                         <div class="div_deg">

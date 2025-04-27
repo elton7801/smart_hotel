@@ -9,6 +9,7 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+
 class BookingController extends Controller
 {
     public function bookings(Request $request)
@@ -45,39 +46,34 @@ class BookingController extends Controller
 
     public function approve_book(Request $request, $id)
     {
-        // Fetch booking record
+        $request->validate([
+            'qrcode_content' => 'required|string|max:255',
+        ], [
+            'qrcode_content.required' => 'Please enter a valid room number before approving the booking.',
+            'qrcode_content.string' => 'Room number must be a valid string.',
+            'qrcode_content.max' => 'Room number may not be greater than 255 characters.',
+        ]);
+
         $booking = Booking::findOrFail($id);
 
-        // Update status to 'approved'
         $booking->status = 'ready';
-
-        $booking->room_number = $request->qrcode_content;
-
-        // Get QR code content from frontend or use default
+        $booking->room_number = 'Room '. $request->qrcode_content;
         $qrcodeContent = $request->input('qrcode_content', json_encode([
             'booking_id' => $booking->id,
             'start_date' => $booking->start_date,
             'end_date' => $booking->end_date,
         ]));
 
-        // Generate QR Code (always generate)
         $qrcode = QrCode::format('png')->size(300)->generate($qrcodeContent);
-
-        // Encode QR code to base64
         $qrcodeBase64 = base64_encode($qrcode);
-
-        // Store QR code in db
         $booking->qr_code = $qrcodeBase64 ?? null;
-
-        // Save changes
         $booking->save();
 
-        // Check if current date is within the activation range
         $currentDate = Carbon::now();
         $startDate = Carbon::parse($booking->start_date);
         $endDate = Carbon::parse($booking->end_date);
 
-        // Prepare message based on activation status
+
         if ($currentDate->between($startDate, $endDate)) {
             $messageType = 'message';
             $message = 'Booking approved and QR Code generated successfully! QR is active.';
@@ -87,7 +83,7 @@ class BookingController extends Controller
                 . $startDate->toDateTimeString() . ' and ' . $endDate->toDateTimeString();
         }
 
-        // Redirect to bookings with message and QR code
+
         return redirect('bookings')
             ->with($messageType, $message)
             ->with('qrcode', $qrcodeBase64);
@@ -103,36 +99,30 @@ class BookingController extends Controller
 
     public function add_booking(Request $request, $id)
     {
-        // Validate input
         $request->validate([
-            'startDate' => 'required|date',
+            'startDate' => 'required|date|after_or_equal:today',
             'endDate' => 'required|date|after:startDate',
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
             'phone' => 'required|string|max:20',
         ]);
 
-        // Retrieve session values or use request data
+
         $checkIn = session('check_in', $request->startDate);
         $checkOut = session('check_out', $request->endDate);
 
-        // Set fixed check-in and check-out times
-        $checkIn = Carbon::parse($checkIn)->setTime(15, 0, 0); // 3:00 PM
-        $checkOut = Carbon::parse($checkOut)->setTime(12, 0, 0); // 12:00 PM
+        $checkIn = Carbon::parse($checkIn)->setTime(15, 0, 0);
+        $checkOut = Carbon::parse($checkOut)->setTime(12, 0, 0);
 
-        // Fetch room details
         $room = Room::findOrFail($id);
 
-        // Calculate number of nights
         $nights = $checkIn->diffInDays($checkOut);
         if($nights == 0){
             $nights=1;
         }
 
-        // Ensure price field is correct
         $totalPrice = $nights * $room->price;
 
-        // Count existing bookings for this room within the date range
         $existingBookingsCount = Booking::where('room_id', $id)
             ->where(function ($query) use ($checkIn, $checkOut) {
                 $query->where('start_date', '<', $checkOut)
@@ -140,17 +130,14 @@ class BookingController extends Controller
             })
             ->count();
 
-        // Check if the room is still available
         if ($existingBookingsCount >= $room->room_quantity) {
             return redirect()->back()->with('message', 'Room is fully booked for the selected dates. Please try different dates.');
         }
 
-        // Ensure the user is logged in
         if (!Auth::check()) {
             return redirect()->back()->with('message', 'You must be logged in to book a room.');
         }
 
-        // Save booking using a transaction
         DB::beginTransaction();
         try {
             $booking = new Booking();
@@ -191,12 +178,10 @@ class BookingController extends Controller
             return redirect()->back()->with('message', 'Access Denied.');
         }
 
-        // Fetch the user's bookings with rooms
         $bookings = Booking::whereHas('user', function ($query) use ($user) {
             $query->where('email', $user->email);
         })->with('room')->get();
 
-        // Automatically update expired bookings to "checkout"
         foreach ($bookings as $booking) {
             if (\Carbon\Carbon::parse($booking->end_date)->isBefore(now()->startOfDay()) && $booking->status !== 'checkout') {
                 $booking->status = 'checkout';

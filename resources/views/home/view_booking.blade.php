@@ -134,7 +134,7 @@
             @if(\Carbon\Carbon::parse($data->end_date)->isBefore(now()->startOfDay()))
                 <p>You have been automatically checked out. Thank you!
                     <a href="{{ url('extend_validity', $data->id) }}" style="color: blue; text-decoration: underline;">
-                        Opps, Something forgotten?
+                        Opps, need more time?
                     </a>
                 </p>
             @elseif($data->status == "cancel")

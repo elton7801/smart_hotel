@@ -45,6 +45,15 @@
        </div>
        <div class="row">
           <div class="col-md-6">
+            @if ($errors->any())
+            <div class="alert alert-danger" style="margin-top: 20px;">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+            @endif
             <form id="request" class="main_form" action="{{ url('contact') }}" method="POST">
                 @csrf
                 <div class="row">
@@ -58,7 +67,7 @@
                         <input class="contactus" placeholder="Phone Number" type="number" name="phone" required>
                     </div>
                     <div class="col-md-12">
-                        <textarea class="textarea" placeholder="Message" name="message" required>Write a review to us</textarea>
+                        <textarea class="textarea" placeholder="Write a review to us" name="message" required></textarea>
                     </div>
 
                     <!-- Star Rating Section -->

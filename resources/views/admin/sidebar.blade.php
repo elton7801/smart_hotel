@@ -37,7 +37,7 @@
         </li>
 
         <li class="{{ Request::is('view_gallary') ? 'active' : '' }}">
-            <a href="{{ url('view_gallary') }}"> <i class="bi bi-book"></i>Gallary </a>
+            <a href="{{ url('view_gallary') }}"> <i class="bi bi-book"></i>Gallery </a>
         </li>
 
         <li class="{{ Request::is('message') ? 'active' : '' }}">

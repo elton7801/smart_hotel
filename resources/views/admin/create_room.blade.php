@@ -27,6 +27,22 @@
             <div class="container-fluid">
                 <div>
                     <h1 style="font-size: 30px; font-weight:bold;">Add Room</h1>
+                    @if (session('success'))
+                        <div class="alert alert-success">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+
+
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
                     <form action="{{ url('add_room') }}" method="post" enctype="multipart/form-data">
                         @csrf
                         <div class="div_deg">

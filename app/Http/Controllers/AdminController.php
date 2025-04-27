@@ -32,9 +32,9 @@ class AdminController extends Controller
             }
             if($usertype == 'staff')
             {
-                $user = Auth::user(); // Get only the logged-in user
+                $user = Auth::user();
                 $assignments = HousekeepingAssignment::where('status', 'in progress')
-                    ->where('user_id', $user->id) // Only fetch assignments for logged-in staff
+                    ->where('user_id', $user->id)
                     ->get();
 
                 return view('staff.staffPage', compact('user', 'assignments'));
@@ -66,6 +66,16 @@ class AdminController extends Controller
 
     public function add_room(Request $request)
     {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'price' => 'required|numeric|min:0',
+            'room_quantity' => 'required|integer|min:1',
+            'pax_number' => 'required|integer|min:1',
+            'type' => 'required|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+
         $data = new Room();
         $data->room_title = $request->title;
         $data->description = $request->description;
@@ -85,7 +95,7 @@ class AdminController extends Controller
                 $data->image=$imagename;
             }
         $data->save();
-        return redirect()->back();
+        return redirect()->back()->with('success', 'Room created successfully!');
     }
 
     public function view_room()
@@ -113,6 +123,16 @@ class AdminController extends Controller
 
     public function update_room(Request $request, $id)
     {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'price' => 'required|numeric|min:0',
+            'room_quantity' => 'required|integer|min:1',
+            'pax_number' => 'required|integer|min:1',
+            'type' => 'required|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+
         $data = Room::find($id);
 
         $data->room_title = $request->title;
@@ -136,7 +156,7 @@ class AdminController extends Controller
 
         $data->save();
 
-        return redirect()->back();
+        return redirect()->back()->with('success', 'Room edit successfully!');
     }
 
     public function view_gallary()
@@ -190,6 +210,16 @@ class AdminController extends Controller
 
     public function mail(Request $request, $id)
     {
+        $request->validate([
+            'greeting' => 'required|string|max:255',
+            'body' => 'required|string',
+            'action_text' => 'nullable|string|max:100',
+            'endline' => 'required|string|max:255',
+        ], [
+            'greeting.required' => 'Please enter a greeting.',
+            'body.required' => 'Please write a message body.',
+            'endline.required' => 'Please greet your customer with an endline.',
+        ]);
         $data = Contact::find($id);
 
         $details = [
@@ -209,7 +239,6 @@ class AdminController extends Controller
     {
         if ($request->qrcode) {
 
-            // Fetch the record with start_date and end_date
             $record = Booking::where('qr_code', $request->qrcode)->first();
 
             if (!$record) {
@@ -220,16 +249,12 @@ class AdminController extends Controller
             $startDate = Carbon::parse($record->start_date);
             $endDate = Carbon::parse($record->end_date);
 
-            // Check if current date is between start and end date
             if ($currentDate->between($startDate, $endDate)) {
 
-                // Generate QR code
                 $qrcode = QrCode::format('png')->size(300)->generate($request->qrcode);
 
-                // Encode QR code to base64 for storing in DB
                 $qrcodeBase64 = base64_encode($qrcode);
 
-                // Update the qr_code column in the database
                 $record->qr_code = $qrcodeBase64;
                 $record->save();
 
@@ -285,7 +310,6 @@ class AdminController extends Controller
         $availableRooms = Room::whereDoesntHave('bookings')->count();
         $mostBookedRoom = Room::withCount('bookings')->orderByDesc('bookings_count')->first();
 
-        // Monthly Bookings Statistics
         $monthlyStats = Booking::selectRaw('
                 MONTH(start_date) as month,
                 COUNT(id) as total_bookings,
@@ -296,7 +320,6 @@ class AdminController extends Controller
             ->orderBy('month')
             ->get();
 
-        // Ensure all months are included (Jan - Dec)
         $allMonths = collect(range(1, 12))->map(function ($month) use ($monthlyStats) {
             $stat = $monthlyStats->firstWhere('month', $month);
             return [
@@ -306,7 +329,6 @@ class AdminController extends Controller
             ];
         });
 
-        // Room Bookings Count (Using JOIN with Room table)
         $roomBookings = DB::table('rooms')
             ->leftJoin('bookings', 'rooms.id', '=', 'bookings.room_id')
             ->select('rooms.room_title', DB::raw('COUNT(bookings.id) as total_bookings'))

@@ -22,6 +22,16 @@ class HomeController extends Controller
 
     public function contact(Request $request)
     {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'phone' => 'required|string|max:20',
+            'message' => 'required|string|max:1000',
+            'rating' => 'required|integer|min:1|max:5',
+        ], [
+            'rating.required' => 'Please give a rating between 1 and 5.',
+        ]);
+
         $contact = new Contact;
 
         $contact->name = $request->name;
@@ -63,13 +73,10 @@ class HomeController extends Controller
         $checkOut = $request->check_out;
         $pax = $request->pax;
 
-        // Store search parameters in session
         session(['check_in' => $checkIn, 'check_out' => $checkOut, 'pax' => $pax]);
 
-        // Check if there are any rooms that fit the capacity, ignoring availability
         $roomsWithEnoughCapacity = Room::where('pax_number', '>=', $pax)->exists();
 
-        // Fetch available rooms based on capacity and booking status
         $availableRooms = Room::where('pax_number', '>=', $pax)
             ->where(function ($query) use ($checkIn, $checkOut) {
                 $query->whereDoesntHave('bookings', function ($q) use ($checkIn, $checkOut) {

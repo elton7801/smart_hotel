@@ -1,8 +1,20 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Profile') }}
-        </h2>
+        <div>
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                {{ __('Profile') }}
+            </h2>
+            @if(Auth::check())
+                @if(Auth::user()->usertype === 'admin')
+                    <a href="{{ url('/home') }}">Home</a>
+                @elseif(Auth::user()->usertype === 'staff')
+                    <a href="{{ url('/staffPage') }}">Home</a>
+                @elseif(Auth::user()->usertype === 'user')
+                    <a href="{{ url('/home') }}">Home</a>
+                @endif
+            @endif
+        </div>
+
     </x-slot>
 
     <div>

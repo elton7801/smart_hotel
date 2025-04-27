@@ -12,24 +12,19 @@ class staffController extends Controller
 
     public function assign_housekeeping(Request $request)
     {
-        // Validate input structure
         $request->validate([
             'assignments' => 'required|array',
         ]);
 
         foreach ($request->assignments as $userId => $times) {
             foreach ($times as $timeSlot => $data) {
-                // Extract room number & addons safely
                 $roomNumber = $data['room_number'] ?? null;
                 $addons = isset($data['addon']) ? implode(',', $data['addon']) : null;
 
                 if (!empty($roomNumber)) {
-                    // Retrieve existing assignment if it exists
                     $existingAssignment = HousekeepingAssignment::where('user_id', $userId)
                         ->where('time_slot', $timeSlot)
                         ->first();
-
-                    // Determine if an update is needed
                     if (!$existingAssignment ||
                         $existingAssignment->room_number !== $roomNumber ||
                         $existingAssignment->special_request !== $addons) {
@@ -42,7 +37,7 @@ class staffController extends Controller
                             [
                                 'room_number' => $roomNumber,
                                 'special_request' => $addons,
-                                'status' => 'in progress', // Always reset to 'in progress' when updated
+                                'status' => 'in progress',
                             ]
                         );
                     }
@@ -72,7 +67,7 @@ class staffController extends Controller
         }
 
         $assignments = HousekeepingAssignment::where('status', 'in progress')
-            ->where('user_id', $user->id) // Ensure this is filtering properly
+            ->where('user_id', $user->id)
             ->get();
 
         return view('staff.staffPage', compact('assignments'));

@@ -29,6 +29,13 @@
           <div class="container-fluid">
 
             <center>
+                <div class="alert alert-danger" style="margin-top: 20px;">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
                 <h1 style="font-size:30px; font-weight:bold;">Mail send to {{ $data->name }}</h1>
 
                 <form action="{{ url('mail',$data->id) }}" method="post">

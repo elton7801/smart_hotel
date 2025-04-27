@@ -35,6 +35,16 @@
 
                 <div>
                     <h1 class="booking_title">Approve This Booking</h1>
+                    @if ($errors->any())
+                        <div class="alert alert-danger" style="margin-top: 20px;">
+                            <strong>Whoops!</strong> There were some problems with your input:
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
                     <form action="{{ url('approve_book', $data->id) }}" method="post" enctype="multipart/form-data">
                         @csrf
 
@@ -81,7 +91,7 @@
                         </div>
                         <div class="div_deg">
                         <label>Room Number:</label>
-                            <input name="qrcode_content" rows="4" cols="50" placeholder="Enter Room number"/>
+                            <input name="qrcode_content" rows="4" cols="50" placeholder="Room number#" value="{{ $data->room_number }}"/>
                         </div>
                         <!-- Submit Button -->
                         <div class="div_deg">

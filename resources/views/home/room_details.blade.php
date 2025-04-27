@@ -23,8 +23,9 @@
    <body class="main-layout">
       <!-- loader  -->
       <div class="loader_bg">
-         <div class="loader"><img src="images/loading.gif" alt="#"/></div>
-      </div>
+        <div class="loader"><img src="{{ asset('images/loading.gif') }}" alt="#"/>
+        </div>
+     </div>
       <!-- end loader -->
       <!-- header -->
       <header>
@@ -120,7 +121,7 @@
                     <label for="bed">Bed</label><br>
                 </div>
                 <div style="padding-top: 20px">
-                    <input type="submit" style="background-color: skyblue" class="btn btn-primary" value="Book Room">
+                    <input type="submit" style="background-color: darkblue" class="btn btn-primary" value="Book Room">
                 </div>
                 </form>
               </div>
